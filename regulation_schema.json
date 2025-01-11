@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the regulation (e.g., '14')"
+          },
+          "title_title": {
+            "type": "string",
+            "description": "The title description"
+          },
+          "chapter": {
+            "type": "integer",
+            "description": "The chapter number of the regulation"
+          },
+          "chapter_title": {
+            "type": "string",
+            "description": "The title of the chapter"
+          },
+          "subchapter": {
+            "type": "string",
+            "description": "The subchapter letter of the regulation (e.g., 'F')"
+          },
+          "subchapter_title": {
+            "type": "string",
+            "description": "The title of the subchapter"
+          },
+          "part": {
+            "type": "integer",
+            "description": "The part number of the regulation"
+          },
+          "part_title": {
+            "type": "string",
+            "description": "The title of the part"
+          }
+        },
+        "required": [
+          "title",
+          "chapter",
+          "subchapter",
+          "part"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "regulations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the regulation (e.g., '14')"
+          },
+          "chapter": {
+            "type": "integer",
+            "description": "The chapter number of the regulation"
+          },
+          "subchapter": {
+            "type": "string",
+            "description": "The subchapter letter of the regulation (e.g., 'F')"
+          },
+          "part": {
+            "type": "integer",
+            "description": "The part number of the regulation"
+          },
+          "section": {
+            "type": "integer",
+            "description": "The section number of the regulation"
+          },
+          "section_title": {
+            "type": "string",
+            "description": "The title of the section"
+          },
+          "paragraph": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional paragraph identifier (e.g., 'c')"
+          },
+          "subparagraph": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Optional subparagraph number"
+          },
+          "item": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Optional item number"
+          },
+          "content": {
+            "type": "string",
+            "description": "The content of the regulation"
+          },
+          "image": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional base64-encoded image associated with the regulation"
+          }
+        },
+        "required": [
+          "title",
+          "chapter",
+          "subchapter",
+          "part",
+          "section",
+          "section_title",
+          "content"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "metadata",
+    "regulations"
+  ],
+  "additionalProperties": false
+}
