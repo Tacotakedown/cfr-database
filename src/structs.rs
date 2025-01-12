@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct FarMetadata {
-    pub title: String,
+    pub title: u16,
     pub title_title: String,
     pub chapter: u16,
     pub chapter_title: String,
@@ -16,13 +16,13 @@ pub struct FarMetadata {
 pub struct AimMetadata {
     pub chapter: u16,
     pub chapter_title: String,
-    pub section: String,
+    pub section: u16,
     pub section_title: String,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct FarEntry {
-    pub title: String,
+    pub title: u16,
     pub chapter: u16,
     pub subchapter: String,
     pub part: u16,
@@ -61,9 +61,9 @@ pub struct Metadata {
 
 #[derive(Debug, Deserialize)]
 pub struct Entries {
-    pub far_metadata: Vec<FarEntry>,
-    pub aim_metadata: Vec<AimEntry>,
-    pub pc_metadata: Vec<PilotControllerGlossaryEntry>,
+    pub far_entry: Vec<FarEntry>,
+    pub aim_entry: Vec<AimEntry>,
+    pub pc_entry: Vec<PilotControllerGlossaryEntry>,
 }
 
 #[derive(Debug, Deserialize)]

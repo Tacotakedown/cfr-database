@@ -1,83 +1,115 @@
 {
-  "metadata": {
-    "far": [
-      // 14 CFR
-      {
-        "title": "14",
-        "title_title": "Aeronautics and Space",
-        "chapter": 1,
-        "chapter_title": "Federal Aviation Administration, Department of Transportation",
-        "subchapter": "A",
-        "subchapter_title": "Definitions and General Requirements",
-        "part": 1,
-        "part_title": "Definitions and Abbreviations"
-      },
-      {
-        "title": "14",
-        "title_title": "Aeronautics and Space",
-        "chapter": 1,
-        "chapter_title": "Federal Aviation Administration, Department of Transportation",
-        "subchapter": "A",
-        "subchapter_title": "Definitions and General Requirements",
-        "part": 3,
-        "part_title": "General Requirements"
-      }
-    ],
-    "aim": [
-      {
-        "title": "AIM",
-        "title_title": "Aeronautical Information Manual",
-        "chapter": 1,
-        "chapter_title": "Air Navigation",
-        "section": 1,
-        "section_title": "Navigation Aids"
-      },
-      {
-        "title": "AIM",
-        "title_title": "Aeronautical Information Manual",
-        "chapter": 1,
-        "chapter_title": "Air Navigation",
-        "section": 2,
-        "section_title": "Performance-Based Navigation (PBN) and Area Navigation (RNAV)",
-        "part": 0,
-        "part_title": ""
-      }
-    ]
-  },
-
-  "content": {
-    "far": [
-      {
-        "title": "14",
-        "chapter": 1,
-        "subchapter": "A",
-        "part": 1,
-        "section": 175,
-        "section_title": "Takeoff and Landing under IFR",
-        "paragraph": "c",
-        "subparagraph": 3,
-        "item": 1,
-        "content": "Each pilot operating an aircraft shall use a compatible instrument approach procedure.",
-        "image": null
-      }
-    ],
-    "aim": [
-      {
-        "chapter": 1,
-        "section": 1,
-        "topic": 1,
-        "topic_title": "General",
-        "paragraph": "a",
-        "content": "Various types of air navigation aids are in use today, each serving a special purpose. These aids have varied owners and operators, namely: the Federal Aviation Administration (FAA), the military services, private organizations, individual states and foreign governments. The FAA has the statutory authority to establish, operate, maintain air navigation facilities and to prescribe standards for the operation of any of these aids which are used for instrument flight in federally controlled airspace. These aids are tabulated in the Chart Supplement."
-      },
-      {
-        "chapter": 1,
-        "section": 1,
-        "topic": 1,
-        "topic_title": "General",
-        "paragraph": "b",
-        "content": "Pilots should be aware of the possibility of momentary erroneous indications on cockpit displays when the primary signal generator for a ground-based navigational transmitter (for example, a glideslope, VOR, or nondirectional beacon) is inoperative. Pilots should disregard any navigation indication, regardless of its apparent validity, if the particular transmitter was identified by %%[NOTAM]%% or otherwise as unusable or inoperative."
-      } // EXAMPLE: example of a link for the P/C glossary syntax %%[term]%%, we will parse this with a regex like /%%\[(.+?)\]%%/g and load a function in react like SendToGlossary(term:string) with the term
-    ]
-  }
+  "metadata": [
+    {
+      "far_metadata": [
+        {
+          "title": 14,
+          "title_title": "Aeronautics and Space",
+          "chapter": 1,
+          "chapter_title": "Federal Aviation Administration, Department of Transportation",
+          "subchapter": "A",
+          "subchapter_title": "Definitions and General Requirements",
+          "part": 1,
+          "part_title": "Definitions and Abbreviations"
+        },
+        {
+          "title": 14,
+          "title_title": "Aeronautics and Space",
+          "chapter": 1,
+          "chapter_title": "Federal Aviation Administration, Department of Transportation",
+          "subchapter": "A",
+          "subchapter_title": "Definitions and General Requirements",
+          "part": 3,
+          "part_title": "General Requirements"
+        }
+      ],
+      "aim_metadata": [
+        {
+          "chapter": 1,
+          "chapter_title": "Air Navigation",
+          "section": 1,
+          "section_title": "Navigation Aids"
+        },
+        {
+          "chapter": 1,
+          "chapter_title": "Air Navigation",
+          "section": 2,
+          "section_title": "Performance-Based Navigation (PBN) and Area Navigation (RNAV)"
+        }
+      ]
+    }
+  ],
+  "regulations": [
+    {
+      "far_entry": [
+        {
+          "title": 14,
+          "chapter": 1,
+          "subchapter": "A",
+          "part": 1,
+          "section": 175,
+          "section_title": "Takeoff and Landing under IFR",
+          "paragraph": "c",
+          "subparagraph": 3,
+          "item": 1,
+          "content": "Each pilot operating an aircraft shall use a compatible instrument approach procedure.",
+          "image": null
+        }
+      ],
+      "aim_entry": [
+        {
+          "chapter": 1,
+          "section": 1,
+          "topic": 1,
+          "topic_title": "General",
+          "paragraph": "a",
+          "content": "Various types of air navigation aids are in use today, each serving a special purpose. These aids have varied owners and operators, namely: the Federal Aviation Administration (FAA), the military services, private organizations, individual states and foreign governments. The FAA has the statutory authority to establish, operate, maintain air navigation facilities and to prescribe standards for the operation of any of these aids which are used for instrument flight in federally controlled airspace. These aids are tabulated in the Chart Supplement.",
+          "image": null
+        },
+        {
+          "chapter": 1,
+          "section": 1,
+          "topic": 1,
+          "topic_title": "General",
+          "paragraph": "b",
+          "content": "Pilots should be aware of the possibility of momentary erroneous indications on cockpit displays when the primary signal generator for a ground-based navigational transmitter (for example, a glideslope, VOR, or nondirectional beacon) is inoperative. Pilots should disregard any navigation indication, regardless of its apparent validity, if the particular transmitter was identified by %%[NOTAM]%% or otherwise as unusable or inoperative.",
+          "image": null
+        }
+      ],
+      "pc_entry": [
+        {
+          "term": "AAM",
+          "definition": "See %%[Advanced Air Mobility]%%"
+        },
+        {
+          "term": "AAR",
+          "definition": "See %%[Airport Arrival Rate]%% \nSee %%[Adapted Routes]%%"
+        },
+        {
+          "term": "Abbreviated IFR Flight Plans",
+          "definition": "An authorization by ATC requiring pilots to submit only that information needed for the purpose of ATC. It includes only a small portion of the usual IFR flight plan information. In certain instances, this may be only aircraft identification, location, and pilot request. Other information may be requested if needed by ATC for separation/control purposes. It is frequently used by aircraft which are airborne and desire an instrument approach or by aircraft which are on the ground and desire a climb to VFR-on-top."
+        },
+        {
+          "term": "ABEAM",
+          "definition": "An aircraft is “abeam” a fix, point, or object when that fix, point, or object is approximately 90 degrees to the right or left of the aircraft track. Abeam indicates a general position rather than a precise point."
+        },
+        {
+          "term": "ABORT",
+          "definition": "To terminate a preplanned aircraft maneuver; e.g., an aborted takeoff."
+        },
+        {
+          "term": "ABRR",
+          "definition": "See %%[Airborne Reroute]%%"
+        },
+        {
+          "term": "AC",
+          "definition": "See %%[Advisory Circular]%%"
+        },
+        {
+          "term": "ACC [ICAO]",
+          "definition": "See %%[Area Control Center [ICAO]]%%"
+        }
+      ]
+    }
+  ]
 }

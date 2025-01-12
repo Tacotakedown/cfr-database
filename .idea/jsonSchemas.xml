@@ -8,7 +8,7 @@
             <SchemaInfo>
               <option name="generatedName" value="New Schema" />
               <option name="name" value="regulation_schema" />
-              <option name="relativePathToSchema" value="regulation_schema.json" />
+              <option name="relativePathToSchema" value="database_schema.json" />
               <option name="patterns">
                 <list>
                   <Item>
@@ -16,6 +16,9 @@
                   </Item>
                   <Item>
                     <option name="path" value="input.jsonc" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="input.database.jsonc" />
                   </Item>
                 </list>
               </option>
