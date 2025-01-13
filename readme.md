@@ -76,3 +76,54 @@ cargo run --bin build_db
 # take db
 # use db
 ```
+
+- if a reg is only one paragraph it still needs paragraph id in the input data
+
+## Usage API
+
+```rust
+use databse_utils::DatabaseInterface;
+
+/**
+Structures that data is parsed into: See `lib.rs`
+pub struct RenderStructure {
+    id: String,
+    title: String,
+    paragraphs: Vec<Paragraph>,
+}
+
+struct Paragraph {
+    paragraph_content: Option<String>,
+    subparagraphs: Option<Vec<SubParagraph>>,
+}
+
+struct SubParagraph {
+    subparagraph_content: Option<String>,
+    items: Option<Vec<Item>>,
+}
+
+struct Item {
+    item_content: String,
+}
+*/
+// let's fetch 14CFR Chapter 1 Subchater A Part 1 Section 3 (FAR 1.3 for you simple folk) and print it to the console 
+fn main() -> Result<()> {
+    let database = DatabaseInterface::new("regulations.db");
+
+    let far_data: RenderStructure = databse_interface.parse_far_database(14, 1, "A", 1, 3)?;
+    print!("{}", render_data.format_as_text());
+}
+/**
+Example output
+**§ 1.3 Rules of construction**
+(a) In Subchapters A through K of this chapter, unless the context requires otherwise:
+(a)(1) Words importing the singular include the plural;
+(a)(2) Words importing the plural include the singular; and
+(a)(3) Words importing the masculine gender include the feminine.
+(b) In Subchapters A through K of this chapter, the word:
+(b)(1) Shall  is used in an imperative sense;
+(b)(2) May  is used in a permissive sense to state authority or permission to do the act prescribed, and the words “no person may * * *” or “a person may not * * *” mean that no person is required, authorized, or permitted to do the act prescribed; and
+(b)(3) Includes  means “includes but is not limited to”
+*/
+```
+

@@ -1,43 +1,49 @@
 use database_utils::structs::*;
+use database_utils::DatabaseInterface;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use rusqlite::{params, Connection, Params, Result};
 use serde::Deserialize;
 use std::fs;
 
 fn main() -> Result<()> {
-    let conn = Connection::open("regulations.db")?;
-    loop {
-        println!("\nRegulations Database Editor");
-        println!("1. Add Regulation");
-        println!("2. View Regulations");
-        println!("3. Edit Regulation");
-        println!("4. Delete Regulation");
-        println!("5. Search Metadata");
-        println!("6. Exit");
+    //let conn = Connection::open("regulations.db")?;
+    let databse_interface = DatabaseInterface::new("regulations.db");
 
-        let choice: usize = Input::new()
-            .with_prompt("Enter your selection")
-            .validate_with(|input: &String| {
-                input
-                    .parse::<usize>()
-                    .map(|_| ())
-                    .map_err(|_| "Enter a valid number")
-            })
-            .interact_text()
-            .unwrap()
-            .parse()
-            .unwrap();
+    let render_data = databse_interface.parse_far_database(14, 1, "A", 1, 3)?;
+    print!("{}", render_data.format_as_text());
 
-        match choice {
-            1 => add_regulation(&conn)?,
-            2 => view_regulations(&conn)?,
-            3 => edit_regulation(&conn)?,
-            4 => delete_regulation(&conn)?,
-            5 => search_metadata_wrapper(&conn)?,
-            6 => break,
-            _ => println!("Invalid choice, please try again!"),
-        }
-    }
+    // loop {
+    //     println!("\nRegulations Database Editor");
+    //     println!("1. Add Regulation");
+    //     println!("2. View Regulations");
+    //     println!("3. Edit Regulation");
+    //     println!("4. Delete Regulation");
+    //     println!("5. Search Metadata");
+    //     println!("6. Exit");
+
+    //     let choice: usize = Input::new()
+    //         .with_prompt("Enter your selection")
+    //         .validate_with(|input: &String| {
+    //             input
+    //                 .parse::<usize>()
+    //                 .map(|_| ())
+    //                 .map_err(|_| "Enter a valid number")
+    //         })
+    //         .interact_text()
+    //         .unwrap()
+    //         .parse()
+    //         .unwrap();
+
+    //     match choice {
+    //         1 => add_regulation(&conn)?,
+    //         2 => view_regulations(&conn)?,
+    //         3 => edit_regulation(&conn)?,
+    //         4 => delete_regulation(&conn)?,
+    //         5 => search_metadata_wrapper(&conn)?,
+    //         6 => break,
+    //         _ => println!("Invalid choice, please try again!"),
+    //     }
+    // }
 
     Ok(())
 }

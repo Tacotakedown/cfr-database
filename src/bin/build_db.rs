@@ -169,5 +169,7 @@ fn main() -> Result<()> {
         }
     }
 
+    println!("Database created");
+
     Ok(())
 }

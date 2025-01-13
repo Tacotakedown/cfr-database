@@ -141,6 +141,7 @@
                 "part",
                 "section",
                 "section_title",
+                "paragraph",
                 "content"
               ]
             }
