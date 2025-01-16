@@ -79,7 +79,7 @@ cargo run --bin build_db
 
 - if a reg is only one paragraph it still needs paragraph id in the input data
 
-## Usage API
+## API Usage
 
 ```rust
 use databse_utils::DatabaseInterface;
