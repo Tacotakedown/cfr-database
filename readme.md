@@ -146,104 +146,142 @@ pub fn parse_pcg_definition(definition: &str) -> Result<ParsedGlossary, String> 
 
 ```
 
-frontend:
+frontend: (leptos in this case)
 
-```tsx
-import React, {useState} from "react";
-import {invoke} from "@tauri-apps/api";
-import {FarAimContext} from "@utils/context"
+```rust
+use leptos::*;
+use tauri_sys::tauri;
+use serde::{Deserialize, Serialize};
 
-type GlossaryLink = {
-    id: number;
-    text: string;
+#[derive(debug)]
+enum BookEnum {
+    FAR,
+    AIM,
+    PCG
 }
 
-type ParsedGlossary = {
-    string_slices: string[],
-    links: [number, GlossaryLink][];
+#[derive(Debug, Clone, Default, Store)]
+struct PageContextState {
+    book: BookEnum,
+    page: u32
 }
 
-type GlossaryLinkProps = {
-    to: number;
-    text: string;
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct GlossaryLink {
+    id: u32,
+    text: String,
 }
 
-const GlossaryLink: React.FC<GlossaryLinkProps> = (props: GlossaryLinkProps) => {
-    const {book, location} = React.useContext(FarAimContext);
-    const handleClick = (to: number): void => {
-        // update context to reflext page change 
-    }
-    return (<div onClick={() => {
-        handleClick(props.to)
-    }}> {props.text} </div>)
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct ParsedGlossary {
+    string_slices: Vec<String>,
+    links: Vec<(usize, GlossaryLink)>,
 }
 
-
-type GlossaryTextProps = {
-    glossary: ParsedGlossary;
+#[component]
+fn GlossaryLink(to: u32, text: String, on_click: Box<dyn Fn(u32)>) -> impl IntoView {
+    view! { 
+           <div class="glossary-link" on:click=move |_| on_click(to)>
+   {text}
+   </div>
+   }
 }
 
-const GlossaryText: Rect.FC<GlossaryTextProps> = (props: GlossaryTextProps) => {
-    const {string_slices, links} = props.glossary;
-
-    return (
-        <>
-            {string_slices.map((string, index) => (
-                <React.Fragment key={index}>
-                    {string}
-                    {links.filter(([i]) => i === index).map(([_, {id, text}]) => (<GlossaryLink key={id} to={id} text={text}/>))}
-                </React.Fragment>
-            ))}
-        </>
-    )
-}
-
-const GlossaryPage = () => {
-    const {book, page} = React.useContext(FarAimContext);
-    const [rawDefinition, setRawDefinition] = React.useState<string>("");
-    const [term, setTerm] = React.useState<string>("");
-    const [glossary, setGlossary] = React.useState<ParsedGlossary | null>(null);
-
-    const fetchGlossary = async () => {
-        try {
-            const result: ParsedGlossary = await invoke("parse_pcg_definition", {definition: rawDefinition});
-            setGlossary(result);
-        } catch (e) {
-            console.error("Failed while fetching glossary item:", e);
-        }
-    }
-
-    React.useEffect(() => {
-        // fetch raw definition based off page (id in the table) 
-        invoke("get_definition", {id: page}).then((result) => {
-            setRawDefinition(result.definition)
-            setTerm(result.term)
-        }).catch((e) => {
-            console.error(e)
+#[component]
+fn GlossaryText(glossary: ParsedGlossary, on_link_click: Box<dyn Fn(u32)>) -> impl IntoView {
+    let links_map = glossary
+        .links
+        .into_iter()
+        .fold(std::collections::HashMap::new(), |mut acc, (index, link)| {
+            acc.entry(index).or_insert_with(Vec::new).push(link);
+            acc
         });
 
-    }, [page])
-
-    React.useEffect(() => {
-        fetchGlossary().catch((e) => {
-            console.error(e)
-        })
-    }, [rawDefintion])
-
-    return (
-        <div className="PC_Glossary">
-            <h1>The Pilot Controller Glossary</h1>
-            {/*   handle searching for terms, when navigating to desired term, use SQL row ID */}
-            {glossary && (
-                <>
-                    <div>{term}</div>
-                    <div className="defintion_render">
-                        <GlossaryText glossary={glossary}/>
-                    </div>
-                </>
-            )}
-        </div>
-    )
+    view! { 
+           <div class="glossary-text">
+              {glossary.string_slices.into_iter().enumerate().map(|(index, slice)| {
+                 let links = links_map.get(&index).unwrap_or(&vec![]);
+                 view! { 
+                 <>
+              {slice}
+              {links.iter().map(|link| {
+                 view! { 
+                 <GlossaryLink to=link.id text=link.text.clone() on_click=on_link_click.clone() />
+              }
+              }).collect::<Vec<_>>()}
+           </>
+   }
+   }).collect::<Vec<_>>()}
+      </div>
+   }
 }
+
+#[component]
+fn GlossaryPage() -> impl IntoView {
+    let context = expect_context::<Store<PageContextState>>();
+
+    let book = context.book();
+    let page = context.page();
+
+    let raw_definition = signal(String::new());
+    let term = signal(String::new());
+    let glossary = signal::<Option<ParsedGlossary>>(None);
+
+    let fetch_definition = Action::new(move |page: u32| async move {
+        if let Ok(result) = tauri::invoke::<_, (String, String)>("get_definition", serde_json::json!({ "id": page })).await {
+            raw_definition.set(result.0);
+            term.set(result.1);
+        } else {
+            log::error!("Failed to fetch definition");
+        }
+    });
+
+    let fetch_glossary = Action::new(move |definition: String| async move {
+        if let Ok(parsed_glossary) = tauri::invoke::<_, ParsedGlossary>("parse_pcg_definition", serde_json::json!({ "definition": definition })).await {
+            glossary.set(Some(parsed_glossary));
+        } else {
+            log::error!("Failed to fetch glossary");
+        }
+    });
+
+    Effect::new(move || {
+        let def = raw_definition.get().clone();
+        if !def.is_empty() {
+            fetch_glossary.dispatch(def);
+        }
+    });
+
+    let handle_link_click = |to: u32| {
+        log::info!("Navigating to glossary item with ID: {}", to);
+        *page.write() = to;
+        *book.write() = BookEnum::PCG;
+    };
+
+    view! { 
+            <div class="PC_Glossary">
+            <h1>The Pilot Controller Glossary</h1>
+         {move || glossary.get().map(|glossary| {
+            view! { 
+            <>
+            <div>{term.get()}</div>
+      <div class="definition-render">
+         <GlossaryText glossary=glossary.clone() on_link_click=Box::new(handle_link_click) />
+      </div>
+   </>
+   }
+   })}
+   </div>
+   }
+}
+
+
+#[component]
+fn App() -> impl IntoView {
+    provide_context(PageContextState::default());
+    view! {
+      <GlossaryPage/>
+   }
+}
+
 
 ```
