@@ -127,3 +127,123 @@ Example output
 */
 ```
 
+### Pilot Controller Glossary Parsing
+
+backend:
+
+```rust
+use databse_utils::DatabaseInterface;
+
+#[tauri::command]
+pub fn parse_pcg_definition(definition: &str) -> Result<ParsedGlossary, String> {
+    let database = DatabaseInterface::new("regulations.db");
+    if let Some(result) = database.parse_and_search_glossary(definition) {
+        Ok(result)
+    } else {
+        Err(format!("Failed to parse definition"))
+    }
+}
+
+```
+
+frontend:
+
+```tsx
+import React, {useState} from "react";
+import {invoke} from "@tauri-apps/api";
+import {FarAimContext} from "@utils/context"
+
+type GlossaryLink = {
+    id: number;
+    text: string;
+}
+
+type ParsedGlossary = {
+    string_slices: string[],
+    links: [number, GlossaryLink][];
+}
+
+type GlossaryLinkProps = {
+    to: number;
+    text: string;
+}
+
+const GlossaryLink: React.FC<GlossaryLinkProps> = (props: GlossaryLinkProps) => {
+    const {book, location} = React.useContext(FarAimContext);
+    const handleClick = (to: number): void => {
+        // update context to reflext page change 
+    }
+    return (<div onClick={() => {
+        handleClick(props.to)
+    }}> {props.text} </div>)
+}
+
+
+type GlossaryTextProps = {
+    glossary: ParsedGlossary;
+}
+
+const GlossaryText: Rect.FC<GlossaryTextProps> = (props: GlossaryTextProps) => {
+    const {string_slices, links} = props.glossary;
+
+    return (
+        <>
+            {string_slices.map((string, index) => (
+                <React.Fragment key={index}>
+                    {string}
+                    {links.filter(([i]) => i === index).map(([_, {id, text}]) => (<GlossaryLink key={id} to={id} text={text}/>))}
+                </React.Fragment>
+            ))}
+        </>
+    )
+}
+
+const GlossaryPage = () => {
+    const {book, page} = React.useContext(FarAimContext);
+    const [rawDefinition, setRawDefinition] = React.useState<string>("");
+    const [term, setTerm] = React.useState<string>("");
+    const [glossary, setGlossary] = React.useState<ParsedGlossary | null>(null);
+
+    const fetchGlossary = async () => {
+        try {
+            const result: ParsedGlossary = await invoke("parse_pcg_definition", {definition: rawDefinition});
+            setGlossary(result);
+        } catch (e) {
+            console.error("Failed while fetching glossary item:", e);
+        }
+    }
+
+    React.useEffect(() => {
+        // fetch raw definition based off page (id in the table) 
+        invoke("get_definition", {id: page}).then((result) => {
+            setRawDefinition(result.definition)
+            setTerm(result.term)
+        }).catch((e) => {
+            console.error(e)
+        });
+
+    }, [page])
+
+    React.useEffect(() => {
+        fetchGlossary().catch((e) => {
+            console.error(e)
+        })
+    }, [rawDefintion])
+
+    return (
+        <div className="PC_Glossary">
+            <h1>The Pilot Controller Glossary</h1>
+            {/*   handle searching for terms, when navigating to desired term, use SQL row ID */}
+            {glossary && (
+                <>
+                    <div>{term}</div>
+                    <div className="defintion_render">
+                        <GlossaryText glossary={glossary}/>
+                    </div>
+                </>
+            )}
+        </div>
+    )
+}
+
+```

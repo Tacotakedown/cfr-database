@@ -1,5 +1,6 @@
 pub mod structs;
 
+use regex::Regex;
 use rusqlite::{params, Connection, Error};
 use std::collections::HashMap;
 
@@ -8,6 +9,17 @@ pub struct RenderStructure {
     id: String,
     title: String,
     paragraphs: Vec<Paragraph>,
+}
+
+#[derive(Debug)]
+pub struct GlossaryLink {
+    pub id: i64, // id in the sql table
+    pub text: String,
+}
+#[derive(Debug)]
+pub struct ParsedGlossary {
+    pub substrings: Vec<String>,
+    pub links: Vec<(usize, GlossaryLink)>, // index of string slice , Frontend constructor arguments
 }
 
 impl RenderStructure {
@@ -145,5 +157,54 @@ impl DatabaseInterface {
         render_structure.paragraphs = sorted_paragraphs.into_iter().map(|(_, p)| p).collect();
 
         Ok(render_structure)
+    }
+
+    pub fn parse_and_search_glossary(&self, input: &str) -> Option<ParsedGlossary> {
+        let reg = Regex::new(r"%%\[(.*?)]%%").unwrap();
+
+        let mut string_slices: Vec<String> = Vec::new();
+        let mut links: Vec<(usize, GlossaryLink)> = Vec::new();
+        let mut last_index: usize = 0;
+
+        for capture in reg.captures_iter(input) {
+            if let Some(matches) = capture.get(0) {
+                let term_start = matches.start();
+                let term_end = matches.end();
+
+                if let Some(term_match) = capture.get(1) {
+                    let term = term_match.as_str();
+                    let mut stmt = self
+                        .connection
+                        .prepare("SELECT rowid FROM pcg_entries WHERE term = ?1")
+                        .expect("Failed to prepare statement");
+                    if let Some(row) = stmt.query_map([term], |row| row.get(0)).unwrap().next() {
+                        let id: i64 = row.unwrap();
+
+                        if last_index < term_start {
+                            string_slices.push(input[last_index..term_start].to_string());
+                        }
+
+                        links.push((
+                            string_slices.len(),
+                            GlossaryLink {
+                                id,
+                                text: term.to_string(),
+                            },
+                        ));
+
+                        string_slices.push(String::new());
+
+                        last_index = term_end;
+                    }
+                }
+            }
+        }
+        if last_index < input.len() {
+            string_slices.push(input[last_index..].to_string());
+        }
+        Some(ParsedGlossary {
+            substrings: string_slices,
+            links,
+        })
     }
 }
